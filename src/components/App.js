@@ -4,10 +4,36 @@ import Header from "./Header";
 import Movie from "./Movie";
 import {initialMovies} from '../movies';
 import {additionalMovies} from '../movies';
+import AddMovie from "./AddMovie";
 
 let headerText = "Crash-Course movie App"
 
 class App extends Component {
+    constructor() {
+        super();
+
+        this.state = {
+            movies: initialMovies
+        };
+        this.loadAdditionalMovies = this.loadAdditionalMovies.bind(this);
+        this.addMovieToGallery = this.addMovieToGallery.bind(this)
+    }
+
+    loadAdditionalMovies(){
+        let currentMovies = {...this.state.movies};
+        let newMovies = Object.assign(currentMovies, additionalMovies);
+        this.setState({movies: newMovies})
+    }
+
+    addMovieToGallery(movie){
+        let ts = Date.now();
+        let newMovie = {};
+        newMovie['movie_' + ts] = movie;
+        let currentMovies = {...this.state.movies};
+        let newMovies = Object.assign(currentMovies, newMovie);
+        this.setState({movies: newMovies})
+    }
+
     render() {
         return (
             <div className="App">
@@ -16,11 +42,14 @@ class App extends Component {
                     Check out these movies
                 </p>
                 <div className='movies'>
-                    <Movie title="50 First Dates" year="2004" desc="Henry Roth is a man afraid of commitment up until he meets the beautiful Lucy. They hit it off and Henry think he's finally found the girl of his dreams." poster="./posters/50-first-dates.png" />
-                    <Movie title="Ferris Bueller's Day Off" year="1986" desc="A high school wise guy is determined to have a day off from school, despite what the principal thinks of that." poster="./posters/ferris.png" />
-                    <Movie title='Dirty Dancing' year='1987' desc='They dance' poster='./posters/dirty-dancing.png'/>
-                    <Movie title="Matilda" year="1996" desc="Story of a wonderful little girl, who happens to be a genius, and her wonderful teacher vs. the worst parents ever and the worst school principal imaginable." poster="./posters/matilda.png" />
+                    {
+                        Object
+                            .keys(this.state.movies)
+                            .map(key => <Movie key={key} meta={this.state.movies[key]} />)
+                    }
                 </div>
+                <div className="add-movies"><button onClick={this.loadAdditionalMovies}>Load more...</button></div>
+                <AddMovie addMovie={this.addMovieToGallery}/>
             </div>
         );
     }
